@@ -36,14 +36,23 @@ class StudentController {
     @GetMapping("{id}")
     public Student getStudentById(@PathVariable("id") UUID id) throws StudentNotFoundException {
         final Optional<Student> studentById = studentService.getStudentById(id);
-        if(studentById.isPresent())
-            return studentById.get();
-        else
-            throw new StudentNotFoundException();
+        if(studentById.isPresent()) return studentById.get();
+        else throw new StudentNotFoundException();
     }
 
     @ExceptionHandler(StudentNotFoundException.class)
     @ResponseStatus(value = HttpStatus.NOT_FOUND,reason = "No user of such id found.")
     void handleStudentNotFoundException(){}
+
+
+    @PutMapping("{id}")
+    public void updateStudent(@PathVariable("id") UUID id, @RequestBody Student student){
+        studentService.updateStudent(id, student);
+    }
+
+    @DeleteMapping("{id}")
+    public void deleteStudent(@PathVariable("id") UUID id){
+        studentService.deleteStudent(id);
+    }
 
 }
