@@ -1,9 +1,8 @@
 package com.codecool.SpringRestApi.service;
 
 
-import com.codecool.SpringRestApi.dao.DAO;
 import com.codecool.SpringRestApi.model.Student;
-import org.springframework.beans.factory.annotation.Qualifier;
+import com.codecool.SpringRestApi.repository.StudentRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,36 +10,39 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class StudentService {
+public class StudentService{
 
-    private DAO studentDao;
+    private StudentRepository studentDao;
 
-    public StudentService(@Qualifier("StudentDao") DAO studentDao){
+    public StudentService(StudentRepository studentDao){
         this.studentDao = studentDao;
     }
 
+    public Optional<Student> getStudentById(Integer  id) {
+        return studentDao.findFirstById(id);
+    }
 
     public void insertStudent(Student student) {
-        studentDao.insertStudent(student);
+        studentDao.save(student);
     }
-
-
-    public Optional<Student> getStudentById(UUID id) {
-        return studentDao.getStudentById(id);
-    }
-
 
     public List<Student> getAllStudents() {
-        return studentDao.getAllStudents();
+        return studentDao.getAllByIdIsNotNull();
     }
 
 
-    public void updateStudent(UUID id, Student newStudent) {
-        studentDao.updateStudent(id, newStudent);
+    public void updateStudent(Integer id, Student newStudent) {
+        Optional<Student> student = getStudentById(id);
+        if (student.isPresent()){
+            student.get().setName(newStudent.getName());
+            studentDao.saveAndFlush(student.get());
+        }
     }
 
-
-    public void deleteStudent(UUID id) {
-        studentDao.deleteStudent(id);
+    public void deleteStudent(Integer id) throws StudentNotFoundException {
+        if (studentDao.existsById(id))
+            studentDao.deleteById(id);
+        else
+            throw new StudentNotFoundException();
     }
 }

@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/student")
@@ -34,7 +33,7 @@ class StudentController {
     }
 
     @GetMapping("{id}")
-    public Student getStudentById(@PathVariable("id") UUID id) throws StudentNotFoundException {
+    public Student getStudentById(@PathVariable("id") Integer id) throws StudentNotFoundException {
         final Optional<Student> studentById = studentService.getStudentById(id);
         if(studentById.isPresent()) return studentById.get();
         else throw new StudentNotFoundException();
@@ -46,12 +45,12 @@ class StudentController {
 
 
     @PutMapping("{id}")
-    public void updateStudent(@PathVariable("id") UUID id, @RequestBody Student student){
+    public void updateStudent(@PathVariable("id") Integer id, @RequestBody Student student){
         studentService.updateStudent(id, student);
     }
 
     @DeleteMapping("{id}")
-    public void deleteStudent(@PathVariable("id") UUID id){
+    public void deleteStudent(@PathVariable("id") Integer id) throws StudentNotFoundException {
         studentService.deleteStudent(id);
     }
 
